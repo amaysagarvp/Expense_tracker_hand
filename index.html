@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+
+        }
+
+        .input {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding-top: 20px;
+        }
+        .input input{
+            border-radius: 20px;
+            border: solid black;
+            text-align: center;
+            height: 50px;
+            width: 200px;
+
+        }
+        .input button{
+            height: 70;
+            width: 200px;
+            border-radius: 30px;
+            border: solid navy;
+            
+        }
+        .list{
+           font-size: 30px;
+           font-weight: 400; 
+           font-family: Georgia, 'Times New Roman', Times, serif;
+           padding-left: 50px;
+        
+        }
+        /* .list delete{
+
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+    </div>
+
+    <div class="input">
+        <input type="text" id="inputText" placeholder="Expense">
+        <input type="text" id="inputAmount" placeholder="amout">
+        <button class="inputBtn" id="inputBtn">Add</button>
+    </div>
+
+    <div class="list" id="list">
+
+    </div>
+
+    <script>
+        const descriptionInput = document.getElementById("inputText");
+        const AmountInput = document.getElementById("inputAmount");
+        const btn = document.getElementById("inputBtn");
+        const list = document.getElementById("list");
+
+       let expenses  = JSON.parse(localStorage.getItem("expenses")) || [];
+       renderExpenses();
+
+        btn.addEventListener("click",()=> {
+           const description = descriptionInput.value.trim();
+           const amount = parseFloat(AmountInput.value);
+
+           if(description ===""||isNaN(amount) || amount <= 0){
+            alert("Please provide the valide description and amount");
+            return;
+            
+           }
+           const currentExpneses = {
+            id:Date.now(),
+            description:description,
+            amount:amount
+            
+           };
+           expenses.push(currentExpneses);
+           renderExpenses();
+           saveExpenses();
+
+           descriptionInput.value = "";
+           AmountInput.value = "";     
+        })
+
+        function renderExpenses(){
+            list.innerHTML="";
+            expenses.forEach(expense=>{
+                list.innerHTML += `<li>${expense.description} -
+                     ₹${expense.amount}
+                     <button onclick="deleteExpense(${expense.id})">Delete</button></li>`
+            });
+          }
+          function deleteExpense(id){
+            expenses = expenses.filter(expense => expense.id !==id)
+            renderExpenses();
+            saveExpenses();
+          }
+
+          function saveExpenses(){
+            localStorage.setItem("expenses",JSON.stringify(expenses));
+          }
+    </script>
+
+</body>
+
+</html>
