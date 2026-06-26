@@ -46,9 +46,10 @@
            padding-left: 50px;
         
         }
-        /* .list delete{
-
-        } */
+         .list delete{
+            border-radius: 5px;
+            border: solid red;
+        } 
     </style>
 </head>
 
@@ -73,6 +74,8 @@
         const btn = document.getElementById("inputBtn");
         const list = document.getElementById("list");
 
+        let editId = null;
+
        let expenses  = JSON.parse(localStorage.getItem("expenses")) || [];
        renderExpenses();
 
@@ -83,15 +86,31 @@
            if(description ===""||isNaN(amount) || amount <= 0){
             alert("Please provide the valide description and amount");
             return;
-            
            }
-           const currentExpneses = {
+
+           if(editId !== null){
+            expenses = expenses.map(expense =>{
+                if(expense.id === editId){
+                    return{
+                        ...expense,description,amount
+                    };
+                }
+                return expense;
+            });
+             editId=null;
+
+           }else{
+            const currentExpneses = {
             id:Date.now(),
             description:description,
             amount:amount
             
            };
-           expenses.push(currentExpneses);
+           expenses.push(currentExpneses); 
+           }
+
+           
+           
            renderExpenses();
            saveExpenses();
 
@@ -104,7 +123,8 @@
             expenses.forEach(expense=>{
                 list.innerHTML += `<li>${expense.description} -
                      ₹${expense.amount}
-                     <button onclick="deleteExpense(${expense.id})">Delete</button></li>`
+                     <button onclick="deleteExpense(${expense.id})">Delete</button>
+                     <button onclick="editExpense(${expense.id})">Edit</button></li>`
             });
           }
           function deleteExpense(id){
@@ -116,6 +136,14 @@
           function saveExpenses(){
             localStorage.setItem("expenses",JSON.stringify(expenses));
           }
+
+          function editExpense(id){
+           const selectExpense = expenses.find(expense =>expense.id === id);
+            descriptionInput.value = selectExpense.description;
+            AmountInput.value = selectExpense.amount;
+            editId=id;
+           }
+          
     </script>
 
 </body>
